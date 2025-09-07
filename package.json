@@ -1,0 +1,12 @@
+{
+  "name": "mintroai-payment-service",
+  "version": "1.0.0",
+  "description": "Payment calculation and Signature service for MintroAI",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
