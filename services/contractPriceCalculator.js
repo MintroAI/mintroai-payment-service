@@ -1,4 +1,5 @@
 const priceService = require('./priceService');
+const networks = require('../config/networks');
 
 class ContractPriceCalculator {
   constructor() {
@@ -89,23 +90,51 @@ class ContractPriceCalculator {
     }
 
     let priceInfo;
-    
-    switch (contractData.contractType) {
-      case 'token':
-        priceInfo = this.calculateTokenPrice(contractData);
-        break;
-      case 'vesting':
-        priceInfo = this.calculateVestingPrice();
-        break;
-      default:
-        throw new Error(`Unsupported contract type: ${contractData.contractType}`);
+    let isFree = false;
+    let freeReason = null;
+
+    // Check if deployment should be free
+    if (contractData.isChainSignatures === true) {
+      isFree = true;
+      freeReason = 'Chain Signatures deployment';
+    }
+
+    // Check if network is testnet
+    if (network && networks[network] && networks[network].isTestnet === true) {
+      isFree = true;
+      freeReason = freeReason ? `${freeReason} + Testnet deployment` : 'Testnet deployment';
+    }
+
+    if (isFree) {
+      // Return free deployment
+      priceInfo = {
+        totalUSD: 0,
+        breakdown: {
+          base: 0,
+          features: [],
+          freeReason: freeReason,
+          total: 0
+        }
+      };
+    } else {
+      // Calculate normal price
+      switch (contractData.contractType) {
+        case 'token':
+          priceInfo = this.calculateTokenPrice(contractData);
+          break;
+        case 'vesting':
+          priceInfo = this.calculateVestingPrice();
+          break;
+        default:
+          throw new Error(`Unsupported contract type: ${contractData.contractType}`);
+      }
     }
 
     let tokenPrice = null;
     let nativeTokenAmount = null;
     let tokenInfo = null;
 
-    if (network) {
+    if (network && !isFree) {
       try {
         tokenInfo = await priceService.getTokenPrice(network);
         tokenPrice = tokenInfo.price;
@@ -120,7 +149,8 @@ class ContractPriceCalculator {
       network: network || null,
       pricing: {
         usd: priceInfo.totalUSD,
-        breakdown: priceInfo.breakdown
+        breakdown: priceInfo.breakdown,
+        isFree: isFree
       },
       token: tokenInfo ? {
         name: tokenInfo.gasToken,
