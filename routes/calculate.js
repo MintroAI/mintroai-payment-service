@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const contractPriceCalculator = require('../services/contractPriceCalculator');
+const networkHelper = require('../utils/networkHelper');
 
 router.post('/calculate', async (req, res) => {
   try {
-    const { contractData, network } = req.body;
+    const { contractData } = req.body;
 
     const validation = contractPriceCalculator.validateContractData(contractData);
     if (!validation.valid) {
@@ -14,7 +15,21 @@ router.post('/calculate', async (req, res) => {
       });
     }
 
-    const priceCalculation = await contractPriceCalculator.calculatePrice(contractData, network);
+    let targetNetwork = null;
+    
+    if (contractData.chainId) {
+      targetNetwork = networkHelper.getNetworkKeyByChainId(contractData.chainId);
+      
+      if (!targetNetwork) {
+        return res.status(400).json({
+          success: false,
+          error: `Chain ID ${contractData.chainId} is not supported`,
+          supportedChainIds: networkHelper.getSupportedChainIds()
+        });
+      }
+    }
+
+    const priceCalculation = await contractPriceCalculator.calculatePrice(contractData, targetNetwork);
 
     res.json({
       success: true,
@@ -31,9 +46,14 @@ router.post('/calculate', async (req, res) => {
 router.get('/pricing-info', (req, res) => {
   try {
     const pricingInfo = contractPriceCalculator.getPricingInfo();
+    const supportedChainIds = networkHelper.getSupportedChainIds();
+    
     res.json({
       success: true,
-      data: pricingInfo
+      data: {
+        pricing: pricingInfo,
+        supportedChainIds: supportedChainIds
+      }
     });
   } catch (error) {
     res.status(500).json({
@@ -45,7 +65,7 @@ router.get('/pricing-info', (req, res) => {
 
 router.post('/estimate', async (req, res) => {
   try {
-    const { features, contractType, network } = req.body;
+    const { features, contractType, chainId } = req.body;
 
     if (!contractType) {
       return res.status(400).json({
@@ -56,6 +76,7 @@ router.post('/estimate', async (req, res) => {
 
     const contractData = {
       contractType,
+      chainId,
       ...features
     };
 
@@ -66,7 +87,12 @@ router.post('/estimate', async (req, res) => {
       contractData.initialSupply = contractData.initialSupply || 1000000;
     }
 
-    const priceCalculation = await contractPriceCalculator.calculatePrice(contractData, network);
+    let targetNetwork = null;
+    if (chainId) {
+      targetNetwork = networkHelper.getNetworkKeyByChainId(chainId);
+    }
+
+    const priceCalculation = await contractPriceCalculator.calculatePrice(contractData, targetNetwork);
 
     res.json({
       success: true,
