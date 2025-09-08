@@ -1,11 +1,13 @@
 const express = require('express');
 const priceRoutes = require('./routes/price');
+const calculateRoutes = require('./routes/calculate');
 const app = express();
 const PORT = 8000;
 
 app.use(express.json());
 
 app.use('/api', priceRoutes);
+app.use('/api', calculateRoutes);
 
 app.get('/health', (req, res) => {
   res.status(200).json({
@@ -23,7 +25,10 @@ app.get('/', (req, res) => {
       health: '/health',
       networks: '/api/networks',
       priceByNetwork: '/api/price/:network',
-      allPrices: '/api/prices'
+      allPrices: '/api/prices',
+      calculate: '/api/calculate',
+      estimate: '/api/estimate',
+      pricingInfo: '/api/pricing-info'
     }
   });
 });
