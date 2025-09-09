@@ -160,8 +160,11 @@ class SignatureService {
     // Calculate token amount needed
     const tokenAmount = usdAmount / tokenPriceInUsd;
     
+    // Limit to 9 decimal places to avoid precision issues
+    const tokenAmountFixed = tokenAmount.toFixed(9);
+    
     // Convert to Wei (18 decimals)
-    const weiAmount = ethers.parseEther(tokenAmount.toString());
+    const weiAmount = ethers.parseEther(tokenAmountFixed);
     
     return weiAmount.toString();
   }
