@@ -1,13 +1,15 @@
 const express = require('express');
 const priceRoutes = require('./routes/price');
 const calculateRoutes = require('./routes/calculate');
+const deploymentRoutes = require('./routes/signature');
 const app = express();
-const PORT = 8000;
+const PORT = process.env.PORT || 8000;
 
 app.use(express.json());
 
 app.use('/api', priceRoutes);
 app.use('/api', calculateRoutes);
+app.use('/api/signature', deploymentRoutes);
 
 app.get('/health', (req, res) => {
   res.status(200).json({
@@ -28,7 +30,11 @@ app.get('/', (req, res) => {
       allPrices: '/api/prices',
       calculate: '/api/calculate',
       estimate: '/api/estimate',
-      pricingInfo: '/api/pricing-info'
+      pricingInfo: '/api/pricing-info',
+      signature: {
+        prepare: '/api/signature/prepare',
+        verify: '/api/signature/verify'
+      }
     }
   });
 });
