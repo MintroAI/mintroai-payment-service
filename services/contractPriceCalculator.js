@@ -45,7 +45,7 @@ class ContractPriceCalculator {
       });
     }
 
-    if (contractData.maxTx === true && contractData.maxTxAmount > 0) {
+    if (contractData.maxTxAmount > 0) {
       totalUSD += this.pricing.token.advancedFeatures.maxTx;
       breakdown.features.push({
         name: 'Max Transaction Limit',
@@ -61,7 +61,7 @@ class ContractPriceCalculator {
       });
     }
 
-    if (contractData.antiBot === true && contractData.cooldownTime > 0) {
+    if (contractData.cooldownTime > 0) {
       totalUSD += this.pricing.token.advancedFeatures.antiBot;
       breakdown.features.push({
         name: 'Anti-Bot Protection',
