@@ -7,17 +7,17 @@ class ContractPriceCalculator {
       token: {
         base: 0,
         basicFeatures: {
-          price: 0.1,
+          price: 50,
           features: ['mintable', 'burnable', 'pausable', 'blacklist']
         },
         advancedFeatures: {
-          maxTx: 0.1,
-          transferTax: 0.1,
-          antiBot: 0.1
+          maxTx: 20,
+          transferTax: 20,
+          antiBot: 20
         }
       },
       vesting: {
-        base: 0.1
+        base: 100
       }
     };
   }
