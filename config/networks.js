@@ -57,6 +57,14 @@ const networks = {
     coingeckoId: 'theta-fuel',
     rpcUrl: 'https://eth-rpc-api-testnet.thetatoken.org/rpc',
     isTestnet: true
+  },
+  soneium: {
+    name: 'Soneium',
+    chainId: 1868,
+    gasToken: 'ethereum',
+    coingeckoId: 'ethereum',
+    rpcUrl: 'https://rpc.soneium.org',
+    isTestnet: false
   }
 };
 
