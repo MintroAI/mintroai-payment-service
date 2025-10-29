@@ -65,6 +65,14 @@ const networks = {
     coingeckoId: 'ethereum',
     rpcUrl: 'https://rpc.soneium.org',
     isTestnet: false
+  },
+  base: {
+    name: 'Base',
+    chainId: 8453,
+    gasToken: 'ethereum',
+    coingeckoId: 'ethereum',
+    rpcUrl: 'https://rpc.base.org',
+    isTestnet: false
   }
 };
 
